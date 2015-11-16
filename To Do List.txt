@@ -1,0 +1,8 @@
+Learn Django, HTML, JQuery so you can:
+
+Build a web app that allows for searching for experiment data:
+
+1: Display list of experiments (Name, Date, Who, When)
+2: Add search field
+3: Use search field to filter results
+4: Add download button
