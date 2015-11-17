@@ -15,6 +15,13 @@ def retrieve_list(experi_table_url):
     if not isinstance(experi_table_url, str):
         raise TypeError("str of url required: " + experi_table_url.str()
                         + "is of type " + experi_table_url.type())
+
+    # Clear all the previous Experiment models
+    """ TODO: Can imagine with a big list of experiments it would be more
+      efficient to only update changed rows and add new rows, instead of
+       deleting and refetching"""
+    Experiment.objects.all().delete()
+
     # get the table and save to a file
     urllib.request.urlretrieve(experi_table_url, file_name)
     experi_file = open(file_name)
