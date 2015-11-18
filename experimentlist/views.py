@@ -8,23 +8,17 @@ from .models import Experiment
 def index(request):
     """ For displaying the web page at the experimentlist index
 
-    Updates the list of experiments, then prints out the list
-    with field name headers
+    Updates the list of experiments, then displays the list
+    according to the experimentlist/index.html template
     :param request:
-    :return: Response of printing the list of experiments
+    :return: Response from renderer
     """
     experimentlist.listretriever.retrieve_list(
         "http://10.1.8.167:8000/report/experiment/csv/"
     )
     field_names = Experiment.field_names
-    output = [', '.join(field_names)]
     experiment_list = Experiment.objects.all()
-
-    for experiment in experiment_list:
-        attributes = (
-            experiment.name, experiment.primary_investigator,
-            experiment.date_created.strftime('%d.%m.%Y  %H:%M'),
-            experiment.data_source,
-        )
-        output.extend(',  '.join(attributes))
-    return HttpResponse('\n'.join(output))
+    context = {
+        'field_names': field_names, 'experiment_list': experiment_list
+    }
+    return render(request, 'experimentlist/index.html', context)
