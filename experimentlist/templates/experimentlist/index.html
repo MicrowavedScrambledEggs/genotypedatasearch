@@ -9,18 +9,20 @@
             font-family: Arial
         }
         #logo {
-            position: absolute;
-            right: 0;
+            float: right;
+        }
+        #searchfield {
+            max-width: 600px;
         }
     </style>
 </head>
 <body>
     <h1>Experiment Search
-    <img id="logo" src="http://www.plantandfood.co.nz/image/pfr-logo-mission.png">
+        <img id="logo" src="http://www.plantandfood.co.nz/image/pfr-logo-mission.png">
     </h1>
     <form>
-        <input type="text">
-        <input type="submit" name="Search">
+        <input id="searchfield" type="text" style="width:90%">
+        <input type="submit" value="Search">
     </form>
 </body>
 {% if experiment_list %}
