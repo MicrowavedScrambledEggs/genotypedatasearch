@@ -16,9 +16,17 @@ def index(request):
     experimentlist.listretriever.retrieve_list(
         "http://10.1.8.167:8000/report/experiment/csv/"
     )
-    field_names = Experiment.field_names
     experiment_list = Experiment.objects.all()
+    return render(
+        request, 'experimentlist/index.html',
+        {'experiment_list': experiment_list}
+    )
+
+
+def search(request, search_term):
+    search_list = Experiment.objects.filter(name=search_term)
+    field_names = Experiment.field_names
     context = {
-        'field_names': field_names, 'experiment_list': experiment_list
+        'field_names': field_names, 'search_list': search_list,
     }
-    return render(request, 'experimentlist/index.html', context)
+    return render(request, 'experimentlist/search.html', context)
