@@ -1,13 +1,28 @@
 <head>
     <style>
+        h1 {
+            font-family: Arial
+        }
         table, th, tr {
-            border: 2px solid lime;
+            border: 2px solid green;
             border-collapse: collapse;
             font-family: Arial
         }
+        #logo {
+            position: absolute;
+            right: 0;
+        }
     </style>
 </head>
-
+<body>
+    <h1>Experiment Search
+    <img id="logo" src="http://www.plantandfood.co.nz/image/pfr-logo-mission.png">
+    </h1>
+    <form>
+        <input type="text">
+        <input type="submit" name="Search">
+    </form>
+</body>
 {% if experiment_list %}
     <!-- Creates a table to display the info on
     each experiment -->
