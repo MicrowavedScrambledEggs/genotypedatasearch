@@ -11,30 +11,45 @@
         #logo {
             float: right;
         }
-        #searchfield {
-            max-width: 600px;
+        #id_search_field {
+            max-width: 800px;
+            width: 90%
         }
     </style>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script>
-        $(document).ready(function(){
-            $("form").submit(function(){
-
-            });
-        });
-    </script>
 </head>
 <body>
     <h1>Experiment Search
         <img id="logo" src="http://www.plantandfood.co.nz/image/pfr-logo-mission.png">
     </h1>
     <form>
-        <input id="searchfield" type="text" name="search_term" style="width:90%">
+        {{ search_form }}
         <input type="submit" value="Search">
     </form>
 </body>
 {% block results %}
-    {% if not experiment_list %}
-        <p>No experiments are available</p>
+    {% if search_list %}
+        <!-- Creates a table to display the info on
+        each experiment -->
+        <table style="width:100%">
+            <!-- sets out the header row (Note: does rely
+            on the list of field names being in the order
+            of name, pi, date, ds) -->
+            <tr>
+                {% for name in field_names %}
+                    <th>{{name}}</th>
+                {% endfor %}
+            </tr>
+            <!-- creates a row for each experiment -->
+            {% for experiment in search_list %}
+            <tr>
+                <td>{{ experiment.name }}</td>
+                <td>{{ experiment.primary_investigator }}</td>
+                <td>{{ experiment.date_created }}</td>
+                <td>{{ experiment.data_source }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% elif search_term %}
+        <p>Search came up with no results</p>
     {% endif %}
 {% endblock %}
