@@ -1,31 +1,4 @@
-<head>
-    <style>
-        h1 {
-            font-family: Arial
-        }
-        table, th, tr {
-            border: 2px solid green;
-            border-collapse: collapse;
-            font-family: Arial
-        }
-        #logo {
-            float: right;
-        }
-        #id_search_field {
-            max-width: 800px;
-            width: 90%
-        }
-    </style>
-</head>
-<body>
-    <h1>Experiment Search
-        <img id="logo" src="http://www.plantandfood.co.nz/image/pfr-logo-mission.png">
-    </h1>
-    <form>
-        {{ search_form }}
-        <input type="submit" value="Search">
-    </form>
-</body>
+{% extends "experimentlist/index.html" %}
 {% block results %}
     {% if search_list %}
         <!-- Creates a table to display the info on
@@ -49,7 +22,7 @@
             </tr>
             {% endfor %}
         </table>
-    {% elif search_term %}
+    {% else %}
         <p>Search came up with no results</p>
     {% endif %}
 {% endblock %}
