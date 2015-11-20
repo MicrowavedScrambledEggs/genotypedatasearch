@@ -1,6 +1,7 @@
-import urllib, io, csv
+import urllib, csv
 
 from experimentlist.models import Experiment
+from datetime import datetime
 
 """Retrieves the experiment table from the database.
 
@@ -8,37 +9,40 @@ Creates a Experiment model from each row
 """
 
 file_name = "experi_list.csv"
+experi_table_url = "http://10.1.8.167:8000/report/experiment/csv/"
 
 
-def retrieve_list(experi_table_url):
-    # Type checking
-    if not isinstance(experi_table_url, str):
-        raise TypeError("str of url required: " + experi_table_url.str()
-                        + "is of type " + experi_table_url.type())
-
-    # Clear all the previous Experiment models
-    """ TODO: Can imagine with a big list of experiments it would be more
-      efficient to only update changed rows and add new rows, instead of
-       deleting and refetching"""
-    Experiment.objects.all().delete()
-
-    # get the table and save to a file
-    urllib.request.urlretrieve(experi_table_url, file_name)
-    experi_file = open(file_name)
-    _create_experiment_models(experi_file)
+def search_experiments(search_term):
+    with urllib.request.urlopen(experi_table_url) as experi_csv:
+    # with open(file_name) as experi_csv:
+        results = _search_table(experi_csv, search_term)
+    if len(results) == 0:
+        return None
+    else:
+        return results
 
 
-def _create_experiment_models(experi_file):
+def _search_table(experi_file, search_term):
     reader = csv.DictReader(experi_file)
+    results = []
     for row in reader:
-        _create_experiment_model(row)
+        if row['name'] == search_term:
+            results.append(_create_experiment_dict(row))
+    return results
 
 
-def _create_experiment_model(row):
-    # Creates and saves an experiment model from the values in the row
+def _create_experiment_dict(row):
+    # Creates a dictionary representing an experiment from the values in the row
     name = row['name']
     who = row['pi']
-    when = row['createddate']
-    experi = Experiment(name=name, primary_investigator=who,
-                        date_created=when)
-    experi.save()
+    # when = datetime.datetime(row['createddate']).strftime('%d.%m.%Y %M:%H')
+    when = _format_time(row['createddate'])
+    return [name, who, when]
+
+
+def _format_time(date_string):
+    split_at_colon = date_string.split(":")
+    front_rebuild = ":".join(split_at_colon[:-1])
+    formatable_time = ''.join([front_rebuild, split_at_colon[-1]])
+    datetime_time = datetime.strptime(formatable_time, "%Y-%m-%d %X.%f%z")
+    return datetime_time.strftime('%d.%m.%Y %H:%M')

@@ -42,10 +42,9 @@
             <!-- creates a row for each experiment -->
             {% for experiment in search_list %}
             <tr>
-                <td>{{ experiment.name }}</td>
-                <td>{{ experiment.primary_investigator }}</td>
-                <td>{{ experiment.date_created }}</td>
-                <td>{{ experiment.data_source }}</td>
+                {% for value in experiment %}
+                <td>{{ value }}</td>
+                {% endfor %}
             </tr>
             {% endfor %}
         </table>
