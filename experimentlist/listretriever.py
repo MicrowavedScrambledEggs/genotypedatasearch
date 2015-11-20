@@ -13,8 +13,8 @@ experi_table_url = "http://10.1.8.167:8000/report/experiment/csv/"
 
 
 def search_experiments(search_term):
-    with urllib.request.urlopen(experi_table_url) as experi_csv:
-    # with open(file_name) as experi_csv:
+    # with urllib.request.urlopen(experi_table_url) as experi_csv:
+    with open(file_name) as experi_csv:
         results = _search_table(experi_csv, search_term)
     if len(results) == 0:
         return None
@@ -27,17 +27,18 @@ def _search_table(experi_file, search_term):
     results = []
     for row in reader:
         if row['name'] == search_term:
-            results.append(_create_experiment_dict(row))
+            results.append(_create_experiment(row))
     return results
 
 
-def _create_experiment_dict(row):
-    # Creates a dictionary representing an experiment from the values in the row
+def _create_experiment(row):
+    # Creates and returns an experiment model from the values in the row
     name = row['name']
     who = row['pi']
-    # when = datetime.datetime(row['createddate']).strftime('%d.%m.%Y %M:%H')
-    when = _format_time(row['createddate'])
-    return [name, who, when]
+    when = row['createddate']
+    return Experiment(
+        name=name, primary_investigator=who, date_created=when
+    )
 
 
 def _format_time(date_string):
