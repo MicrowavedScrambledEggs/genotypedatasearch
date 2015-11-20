@@ -13,8 +13,8 @@ experi_table_url = "http://10.1.8.167:8000/report/experiment/csv/"
 
 
 def search_experiments(search_term):
-    # with urllib.request.urlopen(experi_table_url) as experi_csv:
-    with open(file_name) as experi_csv:
+    with urllib.request.urlopen(experi_table_url) as experi_csv:
+    # with open(file_name) as experi_csv:
         results = _search_table(experi_csv, search_term)
     if len(results) == 0:
         return None
