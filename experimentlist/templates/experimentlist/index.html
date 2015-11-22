@@ -1,22 +1,9 @@
 <head>
-    <style>
-        h1 {
-            font-family: Arial
-        }
-        table, th, tr {
-            border: 2px solid green;
-            border-collapse: collapse;
-            font-family: Arial
-        }
-        #logo {
-            float: right;
-        }
-        #id_search_field {
-            max-width: 800px;
-            width: 90%
-        }
-    </style>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="{% static "experimentlist/css/searchstyle.css" %}">
+    <script src="{% static "jslibraries/jquery-1.11.3.min.js" %}"></script>
+    <script src="{% static "jslibraries/tablesorter/jquery.tablesorter.min.js" %}"></script>
+    <script src="{% static "jslibraries/tablesorter/addons/pager/jquery.tablesorter.pager.js" %}"></script>
     <script>
         $(document).ready(function(){
             $(".download").click(function(e){
@@ -24,32 +11,37 @@
                 var link = "http://10.1.8.167:8000/report/genotype/csv/?experiment=";
                 window.location.href = link + $(this).attr("name");
             });
+            $("table")
+            .tablesorter({widgets: ['zebra']})
+            .tablesorterPager({container: $("#pager")});
         });
     </script>
 </head>
 <body>
     <h1>Experiment Search
-        <img id="logo" src="http://www.plantandfood.co.nz/image/pfr-logo-mission.png">
+        <img id="logo" src="{% static "images/pfr_logo.jpg" %}">
     </h1>
     <form>
         {{ search_form }}
         <input type="submit" value="Search">
     </form>
-</body>
 {% block results %}
     {% if search_list %}
         <!-- Creates a table to display the info on
         each experiment -->
-        <table style="width:100%">
+        <table style="width:100%" class="tablesorter">
             <!-- sets out the header row (Note: does rely
             on the list of field names being in the order
             of name, pi, date, ds) -->
+            <thead>
             <tr>
                 {% for name in field_names %}
                     <th>{{name}}</th>
                 {% endfor %}
             </tr>
+            </thead>
             <!-- creates a row for each experiment -->
+            <tbody>
             {% for experiment in search_list %}
             <tr>
                 <td>{{ experiment.name }}</td>
@@ -59,8 +51,11 @@
                 <td><button class="download" name="{{ experiment.name }}" type="button">Download</button></td>
             </tr>
             {% endfor %}
+            </tbody>
         </table>
     {% elif search_term %}
         <p>Search came up with no results</p>
     {% endif %}
 {% endblock %}
+</table>
+</body>
