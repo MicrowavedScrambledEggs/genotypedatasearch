@@ -1,9 +1,11 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from django_tables2 import RequestConfig
 
 from .models import Experiment
 from .forms import SearchForm
 from .listretriever import search_experiments
+from .tables import ExperimentTable
 
 
 def index(request):
@@ -19,12 +21,16 @@ def index(request):
     """
     if request.method == 'GET' and 'search_field' in request.GET:
         form = SearchForm(request.GET)
-        search_term = request.GET['search_field']
+        search_term = request.GET['search_field'].strip()
         search_list = search_experiments(search_term)
-        field_names = Experiment.field_names
+        if search_list is None:
+            table = None
+        else:
+            table = ExperimentTable(search_list)
+            RequestConfig(request).configure(table)
         context = {
-            'field_names': field_names, 'search_list': search_list,
             'search_form': form, 'search_term': search_term,
+            'table': table,
         }
         return render(
             request, 'experimentlist/index.html', context

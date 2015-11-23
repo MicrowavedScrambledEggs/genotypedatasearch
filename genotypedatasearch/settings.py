@@ -38,6 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'experimentlist',
+    'django_tables2',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -64,6 +65,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.core.context_processors.request',
             ],
         },
     },
@@ -96,6 +98,7 @@ USE_L10N = True
 
 USE_TZ = True
 
+SHORT_DATETIME_FORMAT = 'd-m-Y H:i'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/

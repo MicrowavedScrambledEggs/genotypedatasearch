@@ -1,11 +1,11 @@
 h1 {
     font-family: Arial
 }
-table, th, tr {
+/* table, th, tr {
     border: 2px solid green;
     border-collapse: collapse;
     font-family: Arial
-}
+} */
 #logo {
     float: right;
 }
