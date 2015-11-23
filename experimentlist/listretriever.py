@@ -5,15 +5,15 @@ from datetime import datetime
 
 
 file_name = "experi_list.csv"
-experi_table_url = "http://10.1.8.167:8000/report/experiment/csv/"
+experi_table_url = "http://10.1.8.167:8000/report/experiment/csv/?name="
 data_source_url = "http://10.1.8.120:8000/report/data_source/csv/?experiment="
 
 
 def search_experiments(search_term):
-    """Retrieves the experiment table from the genotype database.
+    """Retrieves the rows in the experiment table from the genotype
+    database using the search_term as a contains filter for the name
+    field. Creates a Experiment model from each row.
 
-    Creates a Experiment model from each row where the name field
-    matches the given search term.
     Does not save the models as the models should always be retrieved
     from the genotype database, not the website DB. Instead returns a
     list of the models
@@ -23,21 +23,28 @@ def search_experiments(search_term):
             None (instead of empty list) if no matching name field on
             experiment table
     """
-    with urllib.request.urlopen(experi_table_url) as experi_csv:
-    # with open(file_name) as experi_csv:
-        results = _search_table(experi_csv, search_term)
-    if len(results) == 0:
-        return None
-    else:
-        return results
+    name_filter = _process_search_term(search_term)
+    search_table = experi_table_url + name_filter
+    urllib.request.urlretrieve(search_table, file_name)
+    experi_csv = open(file_name, 'r')
+    return _create_experiments(experi_csv, search_term)
 
 
-def _search_table(experi_file, search_term):
+def _process_search_term(search_term):
+    terms = search_term.split(" ")
+    return "+".join(terms)
+
+
+def _create_experiments(experi_file, search_term):
     reader = csv.DictReader(experi_file)
     results = []
     for row in reader:
-        if row['name'] == search_term:
-            results.append(_create_experiment(row))
+        """ for some reason, experi_file is the whole table when the
+        search_term doesn't match anything, so have to preform a check if
+        this is the case"""
+        if search_term not in row['name']:
+            return None
+        results.append(_create_experiment(row))
     return results
 
 
@@ -46,7 +53,7 @@ def _create_experiment(row):
     name = row['name']
     who = row['pi']
     when = row['createddate']
-    ds = _get_data_source(name)
+    # ds = _get_data_source(name)
     return Experiment(
         name=name, primary_investigator=who, date_created=when
     )
