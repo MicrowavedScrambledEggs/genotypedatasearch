@@ -11,7 +11,8 @@
             $(".download").click(function(e){
                 e.preventDefault();
                 var link = "http://10.1.8.167:8000/report/genotype/csv/?experiment=";
-                window.location.href = link + $(this).attr("name");
+                var name = $(this).attr("name").replace(" ", "+");
+                window.location.href = link + name;
             });
 
             // Initialises table to be sortable paged table

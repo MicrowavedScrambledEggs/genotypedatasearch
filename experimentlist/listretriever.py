@@ -6,7 +6,7 @@ from datetime import datetime
 
 file_name = "experi_list.csv"
 experi_table_url = "http://10.1.8.167:8000/report/experiment/csv/?name="
-data_source_url = "http://10.1.8.120:8000/report/data_source/csv/?experiment="
+data_source_url = "http://10.1.8.167:8000/report/data_source/csv/?experiment="
 
 
 def search_experiments(search_term):
@@ -23,16 +23,11 @@ def search_experiments(search_term):
             None (instead of empty list) if no matching name field on
             experiment table
     """
-    name_filter = _process_search_term(search_term)
+    name_filter = search_term.replace(" ", "+")
     search_table = experi_table_url + name_filter
     urllib.request.urlretrieve(search_table, file_name)
     experi_csv = open(file_name, 'r')
     return _create_experiments(experi_csv, search_term)
-
-
-def _process_search_term(search_term):
-    terms = search_term.split(" ")
-    return "+".join(terms)
 
 
 def _create_experiments(experi_file, search_term):
@@ -53,17 +48,19 @@ def _create_experiment(row):
     name = row['name']
     who = row['pi']
     when = row['createddate']
-    # ds = _get_data_source(name)
+    ds = _get_data_source(name)
     return Experiment(
-        name=name, primary_investigator=who, date_created=when
+        name=name, primary_investigator=who, date_created=when,
+        data_source=ds,
     )
 
 
 def _get_data_source(name):
-    ds_url = data_source_url + name
-    with urllib.request.urlopen(ds_url) as ds:
-        # TODO: Do stuff. No idea what it looks like until server lets me in again
-        print("shalalala")
+    name_filter = name.replace(" ", "+")
+    ds_url = data_source_url + name_filter
+    reader = csv.DictReader(urllib.request.urlopen(ds_url, 'r'))
+    for row in reader:
+        return row['source']
 
 
 def _format_time(date_string):
