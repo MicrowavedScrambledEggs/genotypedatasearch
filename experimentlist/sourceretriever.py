@@ -4,7 +4,7 @@ from experimentlist.models import DataSource
 from datetime import datetime
 
 ds_file_name = "ds.csv"
-data_source_url = "http://10.1.8.167:8000/report/data_source/csv/?name="
+data_source_url = "http://10.1.8.167:8000/report/data_source/csv/?experiment="
 
 
 def get_data_source(name):

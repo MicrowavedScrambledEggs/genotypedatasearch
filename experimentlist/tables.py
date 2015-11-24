@@ -4,7 +4,7 @@ from .models import Experiment, DataSource
 
 class ExperimentTable(tables.Table):
     download_link = tables.TemplateColumn('<a href="{{record.download_link}}">Download</a>')
-    data_source = tables.TemplateColumn('<a href="{{record.data_source}}">Link</a>')
+    data_source = tables.TemplateColumn('<a class="dslinks" href="{{record.data_source}}">Link</a>')
 
     class Meta:
         model = Experiment

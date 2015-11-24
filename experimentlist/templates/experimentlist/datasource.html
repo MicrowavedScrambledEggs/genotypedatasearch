@@ -4,12 +4,13 @@
     <link rel="stylesheet" type="text/css" href="{% static "css/screen.css" %}"/>
 </head>
 <body>
+    <input type="button" onclick="location.href='{{ from }}';" value="<< Back to Search" />
     {% if table %}
         {% render_table table %}
     {% else %}
         {% if ds_name %}
             <p>No data sources for this name</p>
         {% endif %}
-        <p>Go to <a href="/experimentlist/">Search Page</a> to search experiments</p>
     {% endif %}
+    <input type="button" onclick="location.href='{{ from }}';" value="<< Back to Search" />
 </body>

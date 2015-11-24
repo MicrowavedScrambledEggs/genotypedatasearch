@@ -26,7 +26,7 @@ def search_experiments(search_term):
     """
     name_filter = search_term.replace(" ", "+")
     search_table = experi_table_url + name_filter
-    urllib.request.urlretrieve(search_table, file_name)
+    # urllib.request.urlretrieve(search_table, file_name)
     experi_csv = open(file_name, 'r')
     return _create_experiments(experi_csv, search_term)
 

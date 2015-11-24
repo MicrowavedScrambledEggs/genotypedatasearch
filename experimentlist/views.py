@@ -65,17 +65,20 @@ def search(request, search_term):
 
 
 def datasource(request):
-    if request.method == 'GET' and 'name' in request.GET:
-        ds_name = request.GET['name']
-        ds_list = get_data_source(ds_name)
-        if ds_list is None:
-            table = None
-        else:
-            table = DataSourceTable(ds_list)
-            RequestConfig(request, paginate={"per_page": 25}).configure(table)
-        return render(
-            request, 'experimentlist/datasource.html',
-            {'table': table, 'ds_name': ds_name}
-        )
-    else:
-        return render(request, 'experimentlist/datasource.html', {})
+    from_page = 'experimentlist/'
+    if request.method == 'GET':
+        if 'from' in request.GET:
+            from_page = request.GET['from']
+        if 'name' in request.GET:
+            ds_name = request.GET['name']
+            ds_list = get_data_source(ds_name)
+            if ds_list is None:
+                table = None
+            else:
+                table = DataSourceTable(ds_list)
+                RequestConfig(request, paginate={"per_page": 25}).configure(table)
+            return render(
+                request, 'experimentlist/datasource.html',
+                {'table': table, 'ds_name': ds_name, 'from': from_page}
+            )
+    return render(request, 'experimentlist/datasource.html', {'from': from_page})
