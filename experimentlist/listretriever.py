@@ -5,9 +5,8 @@ from datetime import datetime
 
 
 file_name = "experi_list.csv"
-ds_file_name = "ds.csv"
 experi_table_url = "http://10.1.8.167:8000/report/experiment/csv/?name="
-data_source_url = "http://10.1.8.167:8000/report/data_source/csv/?name="
+data_source_url = "data_source/?name="
 download_url = "http://10.1.8.167:8000/report/genotype/csv/?experiment="
 
 
@@ -50,22 +49,12 @@ def _create_experiment(row):
     name = row['name']
     who = row['pi']
     when = _string_to_datetime(row['createddate'])
-    ds = _get_data_source(name)
+    ds = data_source_url + name.replace(" ", "+")
     dl = download_url + name.replace(" ", "+")
     return Experiment(
         name=name, primary_investigator=who, date_created=when,
-        data_source=ds, download_link=dl,
+        download_link=dl, data_source=ds,
     )
-
-
-def _get_data_source(name):
-    name_filter = name.replace(" ", "+")
-    ds_url = data_source_url + name_filter
-    urllib.request.urlretrieve(ds_url, ds_file_name)
-    ds_file = open(ds_file_name, 'r')
-    reader = csv.DictReader(ds_file)
-    for row in reader:
-        return row['source']
 
 
 def _string_to_datetime(date_string):

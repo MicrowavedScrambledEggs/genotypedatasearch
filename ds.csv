@@ -1,2 +1,2 @@
 comment,name,search_index,is_active,source,supplier,typ,id,supplieddate
-none,Training Sample QTL,'csv':4 'qtl':3 'sampl':2 'train':1,False,data/genotype/QTL_Sample/listeria_rot.csv.gz,John McCallum,CSV,63,2015-11-21
+none,Import Kiwifruit GBS_Workshop_Maize,'csv':6 'gbs':3 'import':1 'kiwifruit':2 'maiz':5 'workshop':4,False,data/genotype/GBS_Workshop_Maize/04_PivotMergedTaxaTBT.c10.gz,John McCallum,CSV,62,2015-11-21

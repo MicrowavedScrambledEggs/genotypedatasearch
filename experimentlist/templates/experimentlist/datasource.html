@@ -1,0 +1,15 @@
+{% load staticfiles %}
+{% load render_table from django_tables2 %}
+<head>
+    <link rel="stylesheet" type="text/css" href="{% static "css/screen.css" %}"/>
+</head>
+<body>
+    {% if table %}
+        {% render_table table %}
+    {% else %}
+        {% if ds_name %}
+            <p>No data sources for this name</p>
+        {% endif %}
+        <p>Go to <a href="/experimentlist/">Search Page</a> to search experiments</p>
+    {% endif %}
+</body>

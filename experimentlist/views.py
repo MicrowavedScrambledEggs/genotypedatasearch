@@ -5,7 +5,8 @@ from django_tables2 import RequestConfig
 from .models import Experiment
 from .forms import SearchForm
 from .listretriever import search_experiments
-from .tables import ExperimentTable
+from .tables import ExperimentTable, DataSourceTable
+from .sourceretriever import get_data_source
 
 
 def index(request):
@@ -27,7 +28,7 @@ def index(request):
             table = None
         else:
             table = ExperimentTable(search_list)
-            RequestConfig(request).configure(table)
+            RequestConfig(request, paginate={"per_page": 25}).configure(table)
         context = {
             'search_form': form, 'search_term': search_term,
             'table': table,
@@ -61,3 +62,20 @@ def search(request, search_term):
         'field_names': field_names, 'search_list': search_list,
     }
     return render(request, 'experimentlist/search.html', context)
+
+
+def datasource(request):
+    if request.method == 'GET' and 'name' in request.GET:
+        ds_name = request.GET['name']
+        ds_list = get_data_source(ds_name)
+        if ds_list is None:
+            table = None
+        else:
+            table = DataSourceTable(ds_list)
+            RequestConfig(request, paginate={"per_page": 25}).configure(table)
+        return render(
+            request, 'experimentlist/datasource.html',
+            {'table': table, 'ds_name': ds_name}
+        )
+    else:
+        return render(request, 'experimentlist/datasource.html', {})

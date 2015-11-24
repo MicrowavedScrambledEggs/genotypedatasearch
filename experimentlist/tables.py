@@ -1,9 +1,10 @@
 import django_tables2 as tables
-from .models import Experiment
+from .models import Experiment, DataSource
 
 
 class ExperimentTable(tables.Table):
     download_link = tables.TemplateColumn('<a href="{{record.download_link}}">Download</a>')
+    data_source = tables.TemplateColumn('<a href="{{record.data_source}}">Link</a>')
 
     class Meta:
         model = Experiment
@@ -11,3 +12,8 @@ class ExperimentTable(tables.Table):
         attrs = {"class": "paleblue"}
 
 
+class DataSourceTable(tables.Table):
+    class Meta:
+        model = DataSource
+        exclude = ("id", )
+        attrs = {"class": "paleblue"}
