@@ -4,9 +4,9 @@ from django_tables2 import RequestConfig
 
 from .models import Experiment
 from .forms import SearchForm
-from .listretriever import search_experiments
+from .experiment_query_maker import query_experiments
 from .tables import ExperimentTable, DataSourceTable
-from .sourceretriever import get_data_source
+from .ds_query_maker import query_data_source
 
 
 def index(request):
@@ -23,7 +23,7 @@ def index(request):
     if request.method == 'GET' and 'search_field' in request.GET:
         form = SearchForm(request.GET)
         search_term = request.GET['search_field'].strip()
-        search_list = search_experiments(search_term)
+        search_list = query_experiments(search_term)
         if search_list is None:
             table = None
         else:
@@ -65,13 +65,25 @@ def search(request, search_term):
 
 
 def datasource(request):
-    from_page = 'experimentlist/'
+    """
+    Renders a data source table page according to the datasource.html template
+
+    Populates a table with models.DataSource from a data_source table query
+    using the name field in the GET data.
+
+    Provides a link for the 'back to search' buttons from the from field in the
+    GET data if there is one
+    :param request:
+    :return:
+    """
     if request.method == 'GET':
         if 'from' in request.GET:
             from_page = request.GET['from']
+        else:
+            from_page = None
         if 'name' in request.GET:
             ds_name = request.GET['name']
-            ds_list = get_data_source(ds_name)
+            ds_list = query_data_source(ds_name)
             if ds_list is None:
                 table = None
             else:
@@ -81,4 +93,4 @@ def datasource(request):
                 request, 'experimentlist/datasource.html',
                 {'table': table, 'ds_name': ds_name, 'from': from_page}
             )
-    return render(request, 'experimentlist/datasource.html', {'from': from_page})
+    return render(request, 'experimentlist/datasource.html', {})

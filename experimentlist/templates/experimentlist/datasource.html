@@ -4,7 +4,12 @@
     <link rel="stylesheet" type="text/css" href="{% static "css/screen.css" %}"/>
 </head>
 <body>
-    <input type="button" onclick="location.href='{{ from }}';" value="<< Back to Search" />
+    {% if from %}
+        <input type="button" onclick="location.href='{{ from }}';" value="<< Back to Search" />
+    {% else %}
+        <input type="button" onclick="location.href='{% url 'experimentlist:index' %}';" value="<< Back to Search" />
+    {% endif %}
+    <br>
     {% if table %}
         {% render_table table %}
     {% else %}
@@ -12,5 +17,10 @@
             <p>No data sources for this name</p>
         {% endif %}
     {% endif %}
-    <input type="button" onclick="location.href='{{ from }}';" value="<< Back to Search" />
+    <br>
+    {% if from %}
+        <input type="button" onclick="location.href='{{ from }}';" value="<< Back to Search" />
+    {% else %}
+        <input type="button" onclick="location.href='{% url 'experimentlist:index' %}';" value="<< Back to Search" />
+    {% endif %}
 </body>

@@ -10,10 +10,11 @@ data_source_url = "data_source/?name="
 download_url = "http://10.1.8.167:8000/report/genotype/csv/?experiment="
 
 
-def search_experiments(search_term):
-    """Retrieves the rows in the experiment table from the genotype
-    database using the search_term as a contains filter for the name
-    field. Creates a Experiment model from each row.
+def query_experiments(search_term):
+    """
+    Queries the experiment table in the genotype database with search_term
+    as a contains filter for the name field.
+    Creates a Experiment model from each row returned.
 
     Does not save the models as the models should always be retrieved
     from the genotype database, not the website DB. Instead returns a
@@ -24,22 +25,25 @@ def search_experiments(search_term):
             None (instead of empty list) if no matching name field on
             experiment table
     """
+    # Build url for query
     name_filter = search_term.replace(" ", "+")
     search_table = experi_table_url + name_filter
-    # urllib.request.urlretrieve(search_table, file_name)
+    # Make query
+    urllib.request.urlretrieve(search_table, file_name)
+    experi_csv = open(file_name, 'r')
+    # Check if query returned anything
+    if "No Data" in experi_csv.readline():
+        return None
+
     experi_csv = open(file_name, 'r')
     return _create_experiments(experi_csv, search_term)
 
 
-def _create_experiments(experi_file, search_term):
+def _create_experiments(experi_file):
+    # Creates and returns a list of models.Experiment from the given csv file
     reader = csv.DictReader(experi_file)
     results = []
     for row in reader:
-        """ for some reason, experi_file is the whole table when the
-        search_term doesn't match anything, so have to preform a check if
-        this is the case"""
-        if search_term not in row['name']:
-            return None
         results.append(_create_experiment(row))
     return results
 

@@ -6,6 +6,9 @@
     <script type="text/javascript" src="{% static "jslibraries/jquery-1.11.3.min.js" %}"></script>
     <script>
         $(document).ready(function(){
+            // Adds a from field to the GET data in the datasource table links
+            // that matches the current url
+            // For the 'back to search' buttons in the datasoure table pages
             $(".dslinks").each(function(){
                 var link = $(this).attr("href");
                 var link_w_from = link + "&from=" + window.location.href;
