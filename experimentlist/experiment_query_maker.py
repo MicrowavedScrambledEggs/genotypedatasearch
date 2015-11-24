@@ -7,7 +7,7 @@ from datetime import datetime
 file_name = "experi_list.csv"
 experi_table_url = "http://10.1.8.167:8000/report/experiment/csv/?name="
 data_source_url = "data_source/?name="
-download_url = "http://10.1.8.167:8000/report/genotype/csv/?experiment="
+download_url = "download/"
 
 
 def query_experiments(search_term):
@@ -36,7 +36,7 @@ def query_experiments(search_term):
         return None
 
     experi_csv = open(file_name, 'r')
-    return _create_experiments(experi_csv, search_term)
+    return _create_experiments(experi_csv)
 
 
 def _create_experiments(experi_file):
@@ -54,7 +54,7 @@ def _create_experiment(row):
     who = row['pi']
     when = _string_to_datetime(row['createddate'])
     ds = data_source_url + name.replace(" ", "+")
-    dl = download_url + name.replace(" ", "+")
+    dl = download_url + name.replace(" ", "+") + "/"
     return Experiment(
         name=name, primary_investigator=who, date_created=when,
         download_link=dl, data_source=ds,

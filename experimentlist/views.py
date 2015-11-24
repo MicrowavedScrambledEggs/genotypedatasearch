@@ -1,5 +1,7 @@
+import csv, urllib
+
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import StreamingHttpResponse
 from django_tables2 import RequestConfig
 
 from .models import Experiment
@@ -7,6 +9,8 @@ from .forms import SearchForm
 from .experiment_query_maker import query_experiments
 from .tables import ExperimentTable, DataSourceTable
 from .ds_query_maker import query_data_source
+
+genotype_url = "http://10.1.8.167:8000/report/genotype/csv/?experiment="
 
 
 def index(request):
@@ -94,3 +98,24 @@ def datasource(request):
                 {'table': table, 'ds_name': ds_name, 'from': from_page}
             )
     return render(request, 'experimentlist/datasource.html', {})
+
+
+class Echo(object):
+    """An object that implements just the write method of the file-like
+    interface.
+    """
+    def write(self, value):
+        """Write the value by returning it, instead of storing in a buffer."""
+        return value
+
+
+def stream_experiment_csv(request, experi_name):
+    urllib.request.urlretrieve(genotype_url + experi_name, 'experiment.csv')
+    experiment_csv = open('experiment.csv', 'r')
+    reader = csv.reader(experiment_csv)
+    writer = csv.writer(Echo())
+    response = StreamingHttpResponse((writer.writerow(row) for row in reader),
+                                     content_type="text/csv")
+    content = 'attachment; filename="' + experi_name + '.csv"'
+    response['Content-Disposition'] = content
+    return response

@@ -15,7 +15,7 @@ class Experiment(models.Model):
     primary_investigator = models.CharField(field_names[1], max_length=200)  # Who
     date_created = models.DateTimeField(field_names[2])  # When
     data_source = models.CharField(field_names[3], max_length=200)
-    download_link = models.URLField(field_names[4])
+    download_link = models.CharField(field_names[4], max_length=200)
 
     def __str__(self):
         return self.name
