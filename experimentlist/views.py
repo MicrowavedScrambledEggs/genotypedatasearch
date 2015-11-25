@@ -101,7 +101,9 @@ def datasource(request):
 
 
 class Echo(object):
-    """An object that implements just the write method of the file-like
+    """Copied from docs.djangoproject.com/en/1.8/howto/outputting-csv/
+
+    An object that implements just the write method of the file-like
     interface.
     """
     def write(self, value):
@@ -110,10 +112,21 @@ class Echo(object):
 
 
 def stream_experiment_csv(request, experi_name):
+    """
+    Queries the genotype table with the experi_name as an experiment filter
+    Saves the result to a csv file. Uses that file to write a http response
+    which downloads the csv file for the client
+    :param request:
+    :param experi_name: name of experiment to query for associations
+    :return: httpresponse that downloads results of query as csv
+    """
+    # Make query
     urllib.request.urlretrieve(genotype_url + experi_name, 'experiment.csv')
+
     experiment_csv = open('experiment.csv', 'r')
     reader = csv.reader(experiment_csv)
     writer = csv.writer(Echo())
+    # Write query results to csv response
     response = StreamingHttpResponse((writer.writerow(row) for row in reader),
                                      content_type="text/csv")
     content = 'attachment; filename="' + experi_name + '.csv"'
