@@ -4,13 +4,15 @@ from django.shortcuts import render
 from django.http import StreamingHttpResponse
 from django_tables2 import RequestConfig
 
-from .models import Experiment
 from .forms import SearchForm
-from .experiment_query_maker import query_experiments
+from .query_maker import QueryMaker
+from .query_strategy import ExperimentQueryStrategy, DataSourceQueryStrategy
 from .tables import ExperimentTable, DataSourceTable
-from .ds_query_maker import query_data_source
 
 genotype_url = "http://10.1.8.167:8000/report/genotype/csv/?experiment="
+data_source_url = "http://10.1.8.167:8000/report/data_source/csv/?experiment="
+experi_table_url = "http://10.1.8.167:8000/report/experiment/csv/?name="
+genotype_file_name = 'experiment.csv'
 
 
 def index(request):
@@ -27,7 +29,8 @@ def index(request):
     if request.method == 'GET' and 'search_field' in request.GET:
         form = SearchForm(request.GET)
         search_term = request.GET['search_field'].strip()
-        search_list = query_experiments(search_term)
+        query_maker = QueryMaker(ExperimentQueryStrategy())
+        search_list = query_maker.make_query(search_term, experi_table_url)
         if search_list is None:
             table = None
         else:
@@ -38,34 +41,13 @@ def index(request):
             'table': table,
         }
         return render(
-            request, 'experimentlist/index.html', context
+            request, 'experimentsearch/index.html', context
         )
     else:
         return render(
-            request, 'experimentlist/index.html',
+            request, 'experimentsearch/index.html',
             {'search_form': SearchForm()}
         )
-
-
-def search(request, search_term):
-    """
-    Renders the search page according to the search.html template,
-    that is populating a table wit models.Experiments who's names
-    match the search_term parameter.
-    Called when url "~/experimentlist/<someExperimentName>/" requested
-
-    No longer used as using forms, but kept around for testing
-
-    :param request:
-    :param search_term: Name models.Experiment need to match to be in table
-    :return:
-    """
-    search_list = Experiment.objects.filter(name=search_term)
-    field_names = Experiment.field_names
-    context = {
-        'field_names': field_names, 'search_list': search_list,
-    }
-    return render(request, 'experimentlist/search.html', context)
 
 
 def datasource(request):
@@ -87,17 +69,18 @@ def datasource(request):
             from_page = None
         if 'name' in request.GET:
             ds_name = request.GET['name']
-            ds_list = query_data_source(ds_name)
+            query_maker = QueryMaker(DataSourceQueryStrategy())
+            ds_list = query_maker.make_query(ds_name, data_source_url)
             if ds_list is None:
                 table = None
             else:
                 table = DataSourceTable(ds_list)
                 RequestConfig(request, paginate={"per_page": 25}).configure(table)
             return render(
-                request, 'experimentlist/datasource.html',
+                request, 'experimentsearch/datasource.html',
                 {'table': table, 'ds_name': ds_name, 'from': from_page}
             )
-    return render(request, 'experimentlist/datasource.html', {})
+    return render(request, 'experimentsearch/datasource.html', {})
 
 
 class Echo(object):
@@ -121,9 +104,9 @@ def stream_experiment_csv(request, experi_name):
     :return: httpresponse that downloads results of query as csv
     """
     # Make query
-    urllib.request.urlretrieve(genotype_url + experi_name, 'experiment.csv')
+    urllib.request.urlretrieve(genotype_url + experi_name, genotype_file_name)
 
-    experiment_csv = open('experiment.csv', 'r')
+    experiment_csv = open(genotype_file_name, 'r')
     reader = csv.reader(experiment_csv)
     writer = csv.writer(Echo())
     # Write query results to csv response
