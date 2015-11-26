@@ -16,3 +16,5 @@ class ExperimentsearchTestCase(TestCase):
         views.experi_table_url = resource_path + 'experiment/'
         views.genotype_url = resource_path + 'genotype/'
 
+    def test_url_build_1(self):
+        
