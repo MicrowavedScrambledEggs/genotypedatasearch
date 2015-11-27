@@ -4,6 +4,7 @@ from datetime import datetime
 
 class AbstractQueryStrategy:
 
+    @staticmethod
     def create_model(self, row):
         raise NotImplementedError("Concrete QueryStrategy missing this method")
 
@@ -14,19 +15,22 @@ class ExperimentQueryStrategy(AbstractQueryStrategy):
     data_source_url = "data_source/?name="
     download_url = "download/"
 
-    def create_model(self, row):
+    @staticmethod
+    def create_model(row):
+        print("Row again is: " + str(row))
         # Creates and returns an experiment model from the values in the row
         name = row['name']
         who = row['pi']
-        when = self._string_to_datetime(row['createddate'])
-        ds = self.data_source_url + name.replace(" ", "+")
-        dl = self.download_url + name.replace(" ", "+") + "/"
+        when = ExperimentQueryStrategy._string_to_datetime(row['createddate'])
+        ds = ExperimentQueryStrategy.data_source_url + name.replace(" ", "+")
+        dl = ExperimentQueryStrategy.download_url + name.replace(" ", "+") + "/"
         return Experiment(
             name=name, primary_investigator=who, date_created=when,
             download_link=dl, data_source=ds,
         )
 
-    def _string_to_datetime(self, date_string):
+    @staticmethod
+    def _string_to_datetime(date_string):
         """
         createddate field values in the database have a colon in the UTC info,
         preventing a simple call of just strptime(). Removes colon in UTC info
@@ -46,7 +50,8 @@ class DataSourceQueryStrategy(AbstractQueryStrategy):
 
     file_name = "ds.csv"
 
-    def create_model(self, row):
+    @staticmethod
+    def create_model(row):
         # Creates a models.DataSource from the values in the given row
         supplieddate = datetime.strptime(row['supplieddate'], "%Y-%m-%d").date()
         return DataSource(

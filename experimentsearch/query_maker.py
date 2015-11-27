@@ -1,10 +1,11 @@
 import urllib, csv
-
+from .errors import QueryError
 
 class QueryMaker:
 
     def __init__(self, query_strategy):
         self.query_strategy = query_strategy
+        self._create_model = query_strategy.create_model
 
     def make_query(self, search_term, table_url):
         """
@@ -24,7 +25,10 @@ class QueryMaker:
         # Build url for query
         search_table = self._make_query_url(table_url, search_term)
         # Make query
-        urllib.request.urlretrieve(search_table, self.query_strategy.file_name)
+        try:
+            urllib.request.urlretrieve(search_table, self.query_strategy.file_name)
+        except urllib.URLError as e:
+            raise QueryError(search_term, table_url, e)
         query_csv = open(self.query_strategy.file_name, 'r')
         # Check if query returned anything
         if "No Data" in query_csv.readline():
@@ -33,7 +37,8 @@ class QueryMaker:
         query_csv = open(self.query_strategy.file_name, 'r')
         return self._create_models(query_csv)
 
-    def _make_query_url(self, experi_table_url, search_term):
+    @staticmethod
+    def _make_query_url(experi_table_url, search_term):
         name_filter = search_term.replace(" ", "+")
         return experi_table_url + name_filter
 
@@ -44,6 +49,3 @@ class QueryMaker:
         for row in reader:
             results.append(self._create_model(row))
         return results
-
-    def _create_model(self, row):
-       return self.query_strategy.create_model(row)
