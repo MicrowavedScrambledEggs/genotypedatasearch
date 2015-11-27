@@ -1,12 +1,14 @@
 import os
 import pathlib
 import datetime
+import io
 
 from django.test import TestCase, Client
 from . import views
 from .query_maker import QueryMaker
 from .query_strategy import ExperimentQueryStrategy, DataSourceQueryStrategy
 from .models import Experiment, DataSource
+from .errors import QueryError
 
 test_resources_path = '/test_resources/'
 
@@ -64,6 +66,13 @@ class ExperimentsearchTestCase(TestCase):
         )
         self.assertEqual(expected_model.date_created, actual_model.date_created)
 
+    def test_experiment_query_2(self):
+        querier = QueryMaker(ExperimentQueryStrategy)
+        actual_models = querier.make_query(
+            "found nothing.csv", views.experi_table_url
+        )
+        self.assertIsNone(actual_models)
+
     def test_data_source_query_1(self):
         expected_model = DataSource(
             name= 'What is up', supplier='Badi James', is_active='False',
@@ -79,4 +88,27 @@ class ExperimentsearchTestCase(TestCase):
         self.assertEqual(expected_model.supply_date, actual_model.supply_date)
         self.assertEqual(expected_model.is_active, actual_model.is_active)
 
+    def test_data_source_query_2(self):
+        querier = QueryMaker(DataSourceQueryStrategy)
+        actual_models = querier.make_query(
+            "found nothing.csv", views.data_source_url
+        )
+        self.assertIsNone(actual_models)
 
+    def test_bad_url_1(self):
+        querier = QueryMaker(ExperimentQueryStrategy())
+        with self.assertRaises(QueryError):
+            querier.make_query('banana.csv', views.experi_table_url)
+
+    def test_bad_url_2(self):
+        querier = QueryMaker(ExperimentQueryStrategy())
+        bad_url = pathlib.Path(os.getcwd() + "/nonexistentdir/").as_uri()
+        with self.assertRaises(QueryError):
+            querier.make_query('bar.csv', bad_url)
+
+    def test_download_1(self):
+        response = self.client.get('/experimentsearch/download/baz.csv/')
+        actual_file = io.BytesIO(b"".join(response.streaming_content))
+        expected_file = open('test_resources/genotype/baz.csv')
+
+        self.assertEqual(actual_file, expected_file)

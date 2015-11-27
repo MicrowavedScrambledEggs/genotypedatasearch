@@ -3,6 +3,13 @@ from datetime import datetime
 
 
 class AbstractQueryStrategy:
+    """
+    query_strategy for QueryMaker. All instances must have a file_name class
+    field and an implemented create_model method
+
+    Essentially tells the QueryMaker which file to save the query to and which
+    model to build from the rows in the query file
+    """
 
     @staticmethod
     def create_model(self, row):
@@ -17,7 +24,6 @@ class ExperimentQueryStrategy(AbstractQueryStrategy):
 
     @staticmethod
     def create_model(row):
-        print("Row again is: " + str(row))
         # Creates and returns an experiment model from the values in the row
         name = row['name']
         who = row['pi']
