@@ -7,7 +7,7 @@
     {% if from %}
         <input type="button" onclick="location.href='{{ from }}';" value="<< Back to Search" />
     {% else %}
-        <input type="button" onclick="location.href='{% url 'experimentlist:index' %}';" value="<< Back to Search" />
+        <input type="button" onclick="location.href='{% url 'experimentsearch:index' %}';" value="<< Back to Search" />
     {% endif %}
     <br>
     {% if table %}
@@ -21,6 +21,6 @@
     {% if from %}
         <input type="button" onclick="location.href='{{ from }}';" value="<< Back to Search" />
     {% else %}
-        <input type="button" onclick="location.href='{% url 'experimentlist:index' %}';" value="<< Back to Search" />
+        <input type="button" onclick="location.href='{% url 'experimentsearch:index' %}';" value="<< Back to Search" />
     {% endif %}
 </body>

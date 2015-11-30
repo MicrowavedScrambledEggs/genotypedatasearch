@@ -23,6 +23,10 @@ class Experiment(models.Model):
 
 class DataSource(models.Model):
 
+    field_names = [
+        'name', 'is_active', 'source', 'supplier', 'supply_date'
+    ]
+
     name = models.CharField(max_length=200)
     is_active = models.CharField(max_length=200) # BoolFeild too fiddly
     source = models.CharField(max_length=200)
