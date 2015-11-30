@@ -1,4 +1,4 @@
-h1 {
+h1, p, label {
     font-family: Arial
 }
 /* table, th, tr {
@@ -6,10 +6,9 @@ h1 {
     border-collapse: collapse;
     font-family: Arial
 } */
-#logo {
-    float: right;
-}
+
 .search_field {
     max-width: 800px;
-    width: 90%
+    width: 90%;
 }
+

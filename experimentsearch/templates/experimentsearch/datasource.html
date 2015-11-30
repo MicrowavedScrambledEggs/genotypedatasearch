@@ -1,9 +1,11 @@
+{% extends "experimentsearch/menu.html" %}
 {% load staticfiles %}
 {% load render_table from django_tables2 %}
-<head>
+
+{% block head %}
     <link rel="stylesheet" type="text/css" href="{% static "css/screen.css" %}"/>
-</head>
-<body>
+{% endblock %}
+{% block content %}
     {% if from %}
         <input type="button" onclick="location.href='{{ from }}';" value="<< Back to Search" />
     {% else %}
@@ -23,4 +25,4 @@
     {% else %}
         <input type="button" onclick="location.href='{% url 'experimentsearch:index' %}';" value="<< Back to Search" />
     {% endif %}
-</body>
+{% endblock %}
