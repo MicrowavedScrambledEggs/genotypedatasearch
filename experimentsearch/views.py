@@ -4,16 +4,20 @@ from django.shortcuts import render
 from django.http import StreamingHttpResponse
 from django_tables2 import RequestConfig
 
-from .forms import SearchForm
 from .query_maker import QueryMaker
 from .query_strategy import ExperimentQueryStrategy, DataSourceQueryStrategy
 from .tables import ExperimentTable, DataSourceTable
+from . import forms as my_forms
+from .models import Experiment
 
-genotype_url = "http://10.1.8.167:8000/report/genotype/csv/?experiment="
-data_source_url = "http://10.1.8.167:8000/report/data_source/csv/?experiment="
-experi_table_url = "http://10.1.8.167:8000/report/experiment/csv/?name="
+genotype_url = "http://10.1.8.167:8000/report/genotype/csv/"
+data_source_url = "http://10.1.8.167:8000/report/data_source/csv/"
+experi_table_url = "http://10.1.8.167:8000/report/experiment/csv/"
 genotype_file_name = 'experiment.csv'
-
+experi_query_prefix = "?experiment="
+name_query_prefix = "?name="
+pi_query_prefix = "?pi="
+date_query_prefix = "?date="
 
 def index(request):
     """
@@ -26,11 +30,36 @@ def index(request):
     :param request:
     :return:
     """
-    if request.method == 'GET' and 'search_field' in request.GET:
-        form = SearchForm(request.GET)
-        search_term = request.GET['search_field'].strip()
-        query_maker = QueryMaker(ExperimentQueryStrategy())
-        search_list = query_maker.make_query(search_term, experi_table_url)
+    if request.method == 'GET':
+        form = my_forms.NameSearchForm()
+        type_select = my_forms.SearchTypeSelect()
+        search_list = None
+        search_term = None
+        if 'search_by' in request.GET:
+            type_select = my_forms.SearchTypeSelect(request.GET)
+            if request.GET['search_by'] == Experiment.field_names[2]:
+                form = my_forms.DateSearchForm()
+            elif request.GET['search_by'] == Experiment.field_names[1]:
+                form = my_forms.PISearchForm()
+        if 'search_name' in request.GET:
+            form = my_forms.NameSearchForm(request.GET)
+            search_term = request.GET['search_name'].strip()
+            query_maker = QueryMaker(ExperimentQueryStrategy())
+            query_url = experi_table_url + name_query_prefix
+            search_list = query_maker.make_query(search_term, query_url)
+        elif 'search_pi' in request.GET:
+            form = my_forms.PISearchForm(request.GET)
+            search_term = request.GET['search_pi'].strip()
+            query_maker = QueryMaker(ExperimentQueryStrategy())
+            query_url = experi_table_url + pi_query_prefix
+            search_list = query_maker.make_query(search_term, query_url)
+        elif 'search_date' in request.GET:
+            # TODO: Need to check with Helge how he'll do date querires
+            form = my_forms.DateSearchForm(request.GET)
+            search_term = request.GET['search_date']
+            query_maker = QueryMaker(ExperimentQueryStrategy())
+            query_url = experi_table_url + date_query_prefix
+            search_list = query_maker.make_query(search_term, query_url)
         if search_list is None:
             table = None
         else:
@@ -38,7 +67,7 @@ def index(request):
             RequestConfig(request, paginate={"per_page": 25}).configure(table)
         context = {
             'search_form': form, 'search_term': search_term,
-            'table': table,
+            'table': table, 'search_select': my_forms.SearchTypeSelect(request.GET)
         }
         return render(
             request, 'experimentsearch/index.html', context
@@ -46,7 +75,8 @@ def index(request):
     else:
         return render(
             request, 'experimentsearch/index.html',
-            {'search_form': SearchForm()}
+            {'search_form': my_forms.NameSearchForm(),
+             'search_select': my_forms.SearchTypeSelect()}
         )
 
 

@@ -9,7 +9,7 @@ h1 {
 #logo {
     float: right;
 }
-#id_search_field {
+.search_field {
     max-width: 800px;
     width: 90%
 }

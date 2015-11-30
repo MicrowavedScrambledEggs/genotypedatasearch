@@ -25,6 +25,9 @@
         {{ search_form }}
         <input type="submit" value="Search">
     </form>
+    <form>
+        {{ search_select }}
+    </form>
 {% block results %}
     {% if table %}
         {% render_table table %}
