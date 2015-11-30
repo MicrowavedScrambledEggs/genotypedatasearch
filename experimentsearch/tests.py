@@ -40,6 +40,7 @@ class ExperimentsearchTestCase(TestCase):
         views.data_source_url = resource_path + '/data_source/'
         views.experi_table_url = resource_path + '/experiment/'
         views.genotype_url = resource_path + '/genotype/'
+        views.name_query_prefix = ''
 
     def test_url_build_1(self):
         url = 'www.foo.bar/?baz='
@@ -123,10 +124,10 @@ class ExperimentsearchTestCase(TestCase):
         self.assertEqual(actual_bytes, expected_bytes)
 
     def test_index_response_1(self):
-        response = self.client.get('/experimentsearch/', {'search_field': 'bar.csv'})
+        response = self.client.get('/experimentsearch/', {'search_name': 'bar.csv'})
         self.assertTemplateUsed(response, 'experimentsearch/index.html')
         form = response.context['search_form']
-        self.assertEqual(form.cleaned_data['search_field'], 'bar.csv')
+        self.assertEqual(form.cleaned_data['search_name'], 'bar.csv')
         expected_table = ExperimentTable(expected_experi_set)
         actual_table = response.context['table']
         self.assertEqual(len(actual_table.rows), len(expected_table.rows))
@@ -144,10 +145,10 @@ class ExperimentsearchTestCase(TestCase):
 
     def test_index_response_2(self):
         response = self.client.get(
-            '/experimentsearch/', {'search_field': 'found nothing.csv'}
+            '/experimentsearch/', {'search_name': 'found nothing.csv'}
         )
         form = response.context['search_form']
-        self.assertEqual(form.cleaned_data['search_field'], 'found nothing.csv')
+        self.assertEqual(form.cleaned_data['search_name'], 'found nothing.csv')
         self.assertIsNone(response.context['table'])
 
     def test_ds_response_1(self):
