@@ -49,14 +49,15 @@ def index(request):
             type_select = my_forms.SearchTypeSelect(
                 initial={'search_by': Experiment.field_names[1]}
             )
-        elif 'search_date_month' in request.GET:
+        elif 'from_date_month' in request.GET:
             # TODO: Need to check with Helge how he'll do date querires
             form = my_forms.DateSearchForm(request.GET)
-            search_term = request.GET['search_date_month']
-            search_list = make_experiment_query(search_term, date_query_prefix)
-            type_select = my_forms.SearchTypeSelect(
-                initial={'search_by': Experiment.field_names[2]}
-            )
+            if form.is_valid():
+                search_term = request.GET['from_date_month']
+                search_list = make_experiment_query(search_term, date_query_prefix)
+                type_select = my_forms.SearchTypeSelect(
+                    initial={'search_by': Experiment.field_names[2]}
+                )
         if search_list is None:
             table = None
         else:

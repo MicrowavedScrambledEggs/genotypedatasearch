@@ -36,6 +36,16 @@ class DateSearchForm(forms.Form):
     years = []
     for year in range(2013, current_year+1):
         years.append(year)
-    search_date = forms.DateTimeField(
-        label='', widget=SelectDateWidget(years=years),
+    from_date = forms.DateTimeField(
+        label='From ', widget=SelectDateWidget(years=years),
     )
+    to_date = forms.DateTimeField(
+        label=' To ', widget=SelectDateWidget(years=years),
+    )
+
+    def clean(self):
+        cleaned_data = super(DateSearchForm, self).clean()
+        if cleaned_data.get('to_date') < cleaned_data.get('from_date'):
+            raise forms.ValidationError(
+                "Date to search from must precede date to search too"
+            )
