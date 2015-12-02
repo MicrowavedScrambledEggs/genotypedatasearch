@@ -20,6 +20,9 @@ class Experiment(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        app_label = 'experimentsearch'
+
 
 class DataSource(models.Model):
 
@@ -32,3 +35,6 @@ class DataSource(models.Model):
     source = models.CharField(max_length=200)
     supplier = models.CharField(max_length=200)
     supply_date = models.DateField()
+
+    class Meta:
+        app_label = 'experimentsearch'

@@ -27,7 +27,7 @@ class ExperimentQueryStrategy(AbstractQueryStrategy):
         # Creates and returns an experiment model from the values in the row
         name = row['name']
         who = row['pi']
-        when = ExperimentQueryStrategy._string_to_datetime(row['createddate'])
+        when = ExperimentQueryStrategy.string_to_datetime(row['createddate'])
         ds = ExperimentQueryStrategy.data_source_url + name.replace(" ", "+")
         dl = ExperimentQueryStrategy.download_url + name.replace(" ", "+") + "/"
         return Experiment(
@@ -36,7 +36,7 @@ class ExperimentQueryStrategy(AbstractQueryStrategy):
         )
 
     @staticmethod
-    def _string_to_datetime(date_string):
+    def string_to_datetime(date_string):
         """
         createddate field values in the database have a colon in the UTC info,
         preventing a simple call of just strptime(). Removes colon in UTC info
@@ -50,6 +50,25 @@ class ExperimentQueryStrategy(AbstractQueryStrategy):
         formatable_time = ''.join([front_rebuild, split_at_colon[-1]])
 
         return datetime.strptime(formatable_time, "%Y-%m-%d %X.%f%z")
+
+
+class ExperimentUpdate(AbstractQueryStrategy):
+
+    file_name = ExperimentQueryStrategy.file_name
+
+    @staticmethod
+    def create_model(row):
+        # Creates and returns an experiment model from the values in the row
+        name = row['name']
+        who = row['pi']
+        when = ExperimentQueryStrategy.string_to_datetime(row['createddate'])
+        ds = ExperimentQueryStrategy.data_source_url + name.replace(" ", "+")
+        dl = ExperimentQueryStrategy.download_url + name.replace(" ", "+") + "/"
+        Experiment.objects.get_or_create(
+            name=name, date_created=when,
+            defaults={'primary_investigator': who, 'download_link': dl,
+                      'data_source': ds}
+        )
 
 
 class DataSourceQueryStrategy(AbstractQueryStrategy):

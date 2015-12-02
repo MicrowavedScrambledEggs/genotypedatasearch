@@ -41,11 +41,11 @@ def index(request):
         if 'search_name' in request.GET:
             form = my_forms.NameSearchForm(request.GET)
             search_term = request.GET['search_name'].strip()
-            search_list = make_experiment_query(search_term, name_query_prefix)
+            search_list = Experiment.objects.filter(name__contains=search_term)
         elif 'search_pi' in request.GET:
             form = my_forms.PISearchForm(request.GET)
             search_term = request.GET['search_pi'].strip()
-            search_list = make_experiment_query(search_term, pi_query_prefix)
+            search_list = Experiment.objects.filter(primary_investigator__contains=search_term)
             type_select = my_forms.SearchTypeSelect(
                 initial={'search_by': Experiment.field_names[1]}
             )
