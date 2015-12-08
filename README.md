@@ -13,4 +13,3 @@ Allows for searching by experiment name, primary investigator and date created.
 Displays table of matching results, with links in each row to the relavant datasource 
 table and a download link for the data.
 
-Genotype data is currently queried externally, and not stored in this app's server
