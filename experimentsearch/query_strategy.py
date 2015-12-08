@@ -59,16 +59,30 @@ class ExperimentUpdate(AbstractQueryStrategy):
     @staticmethod
     def create_model(row):
         # Creates and returns an experiment model from the values in the row
+        print("At Experiup with row: " + str(row))
         name = row['name']
         who = row['pi']
         when = ExperimentQueryStrategy.string_to_datetime(row['createddate'])
         ds = ExperimentQueryStrategy.data_source_url + name.replace(" ", "+")
         dl = ExperimentQueryStrategy.download_url + name.replace(" ", "+") + "/"
-        Experiment.objects.get_or_create(
-            name=name, date_created=when,
-            defaults={'primary_investigator': who, 'download_link': dl,
-                      'data_source': ds}
-        )
+        model = ExperimentUpdate.get_model(name, who, when)
+        if model is None:
+            print("couldn't find model so storing new one")
+            experi = Experiment(
+                name=name, date_created=when, primary_investigator=who,
+                download_link=dl, data_source=ds
+            )
+            experi.save()
+        else:
+            print('found model!')
+
+    @staticmethod
+    def get_model(name, who, when):
+        q = Experiment.objects.filter(date_created=when)
+        try:
+            return q.get()
+        except Experiment.DoesNotExist:
+            return None
 
 
 class DataSourceQueryStrategy(AbstractQueryStrategy):

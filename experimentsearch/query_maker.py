@@ -27,22 +27,26 @@ class QueryMaker:
         search_table = self._make_query_url(table_url, search_term)
         # Make query
         try:
+            print('querying with ' + search_table)
             urllib.request.urlretrieve(search_table, self.file_name)
         except urllib.error.URLError as e:
             raise QueryError(search_term, table_url, e)
+        print('got file!')
         query_csv = open(self.file_name, 'r')
         # Check if query returned anything
         if "No Data" in query_csv.readline():
             return None
-
+        print('file has data!')
         query_csv = open(self.file_name, 'r')
         return self._create_models(query_csv)
 
     def _create_models(self, experi_file):
         # Creates and returns a list of models.Experiment from the given csv file
+        print("making models")
         reader = csv.DictReader(experi_file)
         results = []
         for row in reader:
+            print("There's a row in reader!")
             results.append(self._create_model(row))
         return results
 

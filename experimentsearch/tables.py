@@ -1,5 +1,5 @@
 import django_tables2 as tables
-from .models import Experiment, DataSource
+from .models import ExperimentForTable, DataSourceForTable
 
 
 class ExperimentTable(tables.Table):
@@ -7,13 +7,13 @@ class ExperimentTable(tables.Table):
     data_source = tables.TemplateColumn('<a class="dslinks" href="{{record.data_source}}">Link</a>')
 
     class Meta:
-        model = Experiment
+        model = ExperimentForTable
         exclude = ("id", )
         attrs = {"class": "paleblue"}
 
 
 class DataSourceTable(tables.Table):
     class Meta:
-        model = DataSource
+        model = DataSourceForTable
         exclude = ("id", )
         attrs = {"class": "paleblue"}

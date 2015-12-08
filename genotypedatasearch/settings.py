@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = (
+    'django_cassandra_engine',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -79,12 +80,19 @@ WSGI_APPLICATION = 'genotypedatasearch.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django_cassandra_engine',
         'NAME': 'gds',
-        'PORT': '5432',
-        'USER': 'postgres',
-        'PASSWORD': 'h0u53l0u53',
-        'HOST': '127.0.0.1'
+        'TEST': {
+            'NAME': 'test_gds',
+        },
+        'HOST': 'localhost',
+        'PORT': '9042',
+        'OPTIONS': {
+            'replication': {
+                'strategy_class': 'SimpleStrategy',
+                'replication_factor': 3
+            }
+        }
     }
 }
 

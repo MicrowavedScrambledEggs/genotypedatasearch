@@ -8,7 +8,7 @@ from .query_maker import QueryMaker
 from .query_strategy import ExperimentQueryStrategy, DataSourceQueryStrategy
 from .tables import ExperimentTable, DataSourceTable
 from . import forms as my_forms
-from .models import Experiment
+from .models import Experiment, make_table_experiment
 
 genotype_url = "http://10.1.8.167:8000/report/genotype/csv/"
 data_source_url = "http://10.1.8.167:8000/report/data_source/csv/"
@@ -67,8 +67,8 @@ class IndexHelper:
         self.form = my_forms.NameSearchForm(self.request.GET)
         #  Makes query
         self.search_term = self.request.GET['search_name'].strip()
-        self.search_list = Experiment.objects.filter(
-            name__contains=self.search_term
+        self.search_list = Experiment.objects(
+             Experiment.name == self.search_term
         )
 
     def search_by_pi(self):
@@ -76,8 +76,8 @@ class IndexHelper:
         self.form = my_forms.PISearchForm(self.request.GET)
         #  Makes Query
         self.search_term = self.request.GET['search_pi'].strip()
-        self.search_list = Experiment.objects.filter(
-            primary_investigator__contains=self.search_term
+        self.search_list = Experiment.objects(
+            Experiment.primary_investigator == self.search_term
         )
         # Updates 'Search by' dropdown
         self.type_select = my_forms.SearchTypeSelect(
@@ -108,10 +108,13 @@ class IndexHelper:
         :return A dict of all the IndexHelper's instance variables (except the request)
                 plus the table, for use as a render context for index()
         """
-        if self.search_list is None or len(self.search_list) == 0:
+        if self.search_list is None or self.search_list.count() == 0:
             table = None
         else:
-            table = ExperimentTable(self.search_list)
+            table_list = []
+            for experiment in self.search_list:
+                table_list.append(make_table_experiment(experiment))
+            table = ExperimentTable(table_list)
             RequestConfig(self.request, paginate={"per_page": 25}).configure(table)
         return {
             'search_form': self.form, 'search_term': self.search_term,
