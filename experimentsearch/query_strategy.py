@@ -1,5 +1,7 @@
-from .models import Experiment, DataSource
+from .models import Experiment, DataSourceForTable
 from datetime import datetime
+from cassandra.util import uuid_from_time
+from pytz import utc
 
 
 class AbstractQueryStrategy:
@@ -12,7 +14,7 @@ class AbstractQueryStrategy:
     """
 
     @staticmethod
-    def create_model(self, row):
+    def create_model(row):
         raise NotImplementedError("Concrete QueryStrategy missing this method")
 
 
@@ -28,6 +30,8 @@ class ExperimentQueryStrategy(AbstractQueryStrategy):
         name = row['name']
         who = row['pi']
         when = ExperimentQueryStrategy.string_to_datetime(row['createddate'])
+        when = when.replace(tzinfo=utc)
+        when = uuid_from_time(when)
         ds = ExperimentQueryStrategy.data_source_url + name.replace(" ", "+")
         dl = ExperimentQueryStrategy.download_url + name.replace(" ", "+") + "/"
         return Experiment(
@@ -59,25 +63,22 @@ class ExperimentUpdate(AbstractQueryStrategy):
     @staticmethod
     def create_model(row):
         # Creates and returns an experiment model from the values in the row
-        print("At Experiup with row: " + str(row))
         name = row['name']
         who = row['pi']
         when = ExperimentQueryStrategy.string_to_datetime(row['createddate'])
+        when = uuid_from_time(when)
         ds = ExperimentQueryStrategy.data_source_url + name.replace(" ", "+")
         dl = ExperimentQueryStrategy.download_url + name.replace(" ", "+") + "/"
-        model = ExperimentUpdate.get_model(name, who, when)
+        model = ExperimentUpdate.get_model(when)
         if model is None:
-            print("couldn't find model so storing new one")
             experi = Experiment(
                 name=name, date_created=when, primary_investigator=who,
                 download_link=dl, data_source=ds
             )
             experi.save()
-        else:
-            print('found model!')
 
     @staticmethod
-    def get_model(name, who, when):
+    def get_model(when):
         q = Experiment.objects.filter(date_created=when)
         try:
             return q.get()
@@ -93,7 +94,7 @@ class DataSourceQueryStrategy(AbstractQueryStrategy):
     def create_model(row):
         # Creates a models.DataSource from the values in the given row
         supplieddate = datetime.strptime(row['supplieddate'], "%Y-%m-%d").date()
-        return DataSource(
+        return DataSourceForTable(
             name=row['name'], is_active=row['is_active'], source=row['source'],
             supplier=row['supplier'], supply_date=supplieddate,
         )

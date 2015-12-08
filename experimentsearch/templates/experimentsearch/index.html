@@ -1,11 +1,18 @@
-{% extends "experimentsearch/menu.html" %}
-{% load staticfiles %}
+{% extends "experimentsearch/tables.html" %}
 {% load render_table from django_tables2 %}
 
-{% block head %}
-    <link rel="stylesheet" type="text/css" href="{% static "css/screen.css" %}"/>
-    <link rel="stylesheet" type="text/css" href="{% static "experimentsearch/css/searchstyle.css" %}">
-    <script type="text/javascript" src="{% static "jslibraries/jquery-1.11.3.min.js" %}"></script>
+{% block nesthead %}
+    <style>
+        h1, p, label {
+            font-family: Arial
+        }
+
+        .search_field {
+            max-width: 800px;
+            width: 90%;
+        }
+    </style>
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.3.min.js"></script>
     <script>
         $(document).ready(function(){
             // Adds a from field to the GET data in the datasource table links

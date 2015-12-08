@@ -17,7 +17,7 @@ class Experiment(Model):
 
     name = columns.Text(index=True,  max_length=200)
     primary_investigator = columns.Text(index=True)  # Who
-    date_created = columns.DateTime(primary_key=True)  # When
+    date_created = columns.TimeUUID(primary_key=True)  # When
     data_source = columns.Text(max_length=200)
     download_link = columns.Text(max_length=200)
 
@@ -78,12 +78,11 @@ class DataSourceForTable(models.Model):
         'name', 'is_active', 'source', 'supplier', 'supply_date'
     ]
 
-    def __init__(self, experiment):
-        self.name = models.CharField(default=experiment.name)
-        self.is_active = models.CharField(default=experiment.is_active) # BoolFeild too fiddly
-        self.source = models.CharField(default=experiment.source)
-        self.supplier = models.CharField(default=experiment.supplier)
-        self.supply_date = models.DateField(default=experiment.supply_date)
+    name = models.CharField(max_length=200)
+    is_active = models.CharField(max_length=200) # BoolFeild too fiddly
+    source = models.CharField(max_length=200)
+    supplier = models.CharField(max_length=200)
+    supply_date = models.DateField()
 
     class Meta:
         app_label = 'experimentsearch'

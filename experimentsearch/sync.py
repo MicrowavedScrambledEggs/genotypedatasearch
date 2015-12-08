@@ -14,10 +14,8 @@ sync_url = 'file:///C:/Users/cfpbtj/PycharmProjects/genotypedatasearch/experi_li
 
 
 def sync_with_genotype_db():
-    print("synching with " + sync_url)
     syncer = QueryMaker(ExperimentUpdate)
     try:
         syncer.make_query('', sync_url)
-        print("syncing finished")
     except QueryError as e:
         print("Syncing Failed because:\n" + str(e))

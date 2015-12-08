@@ -37,7 +37,7 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
+    'django_extensions',
     'experimentsearch',
     'django_tables2',
 )
@@ -102,13 +102,13 @@ DATABASES = {
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC+12'
+TIME_ZONE = 'Pacific/Auckland'
 
 USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 SHORT_DATETIME_FORMAT = 'd-m-Y H:i'
 

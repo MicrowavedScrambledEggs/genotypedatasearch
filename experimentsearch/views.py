@@ -1,5 +1,7 @@
-import csv, urllib
+import csv
+import urllib
 
+from cassandra.cqlengine import functions
 from django.shortcuts import render
 from django.http import StreamingHttpResponse
 from django_tables2 import RequestConfig
@@ -92,8 +94,8 @@ class IndexHelper:
             # 'from' and 'to' dates
             dates = self.form.cleaned_data
             self.search_list = Experiment.objects.filter(
-                date_created__gt=dates['from_date'],
-                date_created__lt=dates['to_date']
+                Experiment.date_created > functions.MinTimeUUID(dates['from_date']),
+                Experiment.date_created < functions.MaxTimeUUID(dates['to_date'])
             )
             # Updates 'Search by' dropdown
             self.type_select = my_forms.SearchTypeSelect(

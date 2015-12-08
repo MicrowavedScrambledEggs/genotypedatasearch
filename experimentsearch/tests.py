@@ -8,9 +8,11 @@ from django.test import TestCase, Client
 from . import views, sync
 from .query_maker import QueryMaker
 from .query_strategy import ExperimentQueryStrategy, DataSourceQueryStrategy
-from .models import Experiment, DataSource
+from .models import Experiment, DataSourceForTable
 from .errors import QueryError
 from .tables import ExperimentTable, DataSourceTable
+from cassandra.util import uuid_from_time
+from pytz import utc
 
 # WARNING: Tests rely on these globals matching the files in dir test_resources
 test_resources_path = '/test_resources/'
@@ -18,12 +20,12 @@ expected_experi_model = Experiment(
     name='What is up', primary_investigator='Badi James',
     data_source="data_source/?name=What+is+up",
     download_link='download/What+is+up/',
-    date_created=datetime.datetime(
-        2015, 11, 20, 11, 14, 40, 386012, datetime.timezone.utc
-    )
+    date_created=uuid_from_time(datetime.datetime(
+        2015, 11, 20, 11, 14, 40, 386012, utc
+    ))
 )
 expected_experi_set = [expected_experi_model]
-expected_ds_model = DataSource(
+expected_ds_model = DataSourceForTable(
     name= 'What is up', supplier='Badi James', is_active='False',
     source='testgzpleaseignore.gz',
     supply_date=datetime.date(2015, 11, 18),
@@ -166,8 +168,8 @@ class ExperimentsearchTestCase(TestCase):
             actual_row = actual_table.rows[row]
             expected_row = expected_table.rows[row]
             with self.subTest(row=row):
-                for col in range(0, len(DataSource.field_names)):
-                    field = DataSource.field_names[col]
+                for col in range(0, len(DataSourceForTable.field_names)):
+                    field = DataSourceForTable.field_names[col]
                     field = field.lower().replace(' ', '_')
                     with self.subTest(col=col):
                         self.assertEqual(
