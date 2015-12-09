@@ -178,7 +178,8 @@ def datasource(request):
         if 'name' in request.GET:
             ds_name = request.GET['name']
             query_maker = QueryMaker(DataSourceQueryStrategy())
-            ds_list = query_maker.make_query(ds_name, data_source_url)
+            query_url = data_source_url + experi_query_prefix
+            ds_list = query_maker.make_query(ds_name, query_url)
             if ds_list is None:
                 table = None
             else:
@@ -212,7 +213,8 @@ def stream_experiment_csv(request, experi_name):
     :return: httpresponse that downloads results of query as csv
     """
     # Make query
-    urllib.request.urlretrieve(genotype_url + experi_name, genotype_file_name)
+    query_url = genotype_url + experi_query_prefix
+    urllib.request.urlretrieve(query_url + experi_name, genotype_file_name)
 
     experiment_csv = open(genotype_file_name, 'r')
     reader = csv.reader(experiment_csv)
