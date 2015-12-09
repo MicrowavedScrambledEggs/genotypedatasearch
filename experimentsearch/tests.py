@@ -5,13 +5,14 @@ import io
 import re
 
 from django.test import TestCase, Client
-from . import views
+from . import views, sync
 from .query_maker import QueryMaker
 from .query_strategy import ExperimentQueryStrategy, DataSourceQueryStrategy
 from .models import Experiment, DataSource
 from .errors import QueryError
 from .tables import ExperimentTable, DataSourceTable
 
+# WARNING: Tests rely on these globals matching the files in dir test_resources
 test_resources_path = '/test_resources/'
 expected_experi_model = Experiment(
     name='What is up', primary_investigator='Badi James',
@@ -33,14 +34,16 @@ expected_ds_set = [expected_ds_model]
 class ExperimentsearchTestCase(TestCase):
 
     def setUp(self):
-        self.client = Client()
         resource_path = pathlib.Path(
             os.getcwd() + test_resources_path
         ).as_uri()
+        sync.sync_url = resource_path + '/experiment/bar.csv'
         views.data_source_url = resource_path + '/data_source/'
         views.experi_table_url = resource_path + '/experiment/'
         views.genotype_url = resource_path + '/genotype/'
         views.name_query_prefix = ''
+        sync.sync_with_genotype_db()
+        self.client = Client()
 
     def test_url_build_1(self):
         url = 'www.foo.bar/?baz='
@@ -124,10 +127,10 @@ class ExperimentsearchTestCase(TestCase):
         self.assertEqual(actual_bytes, expected_bytes)
 
     def test_index_response_1(self):
-        response = self.client.get('/experimentsearch/', {'search_name': 'bar.csv'})
+        response = self.client.get('/experimentsearch/', {'search_name': 'What is up'})
         self.assertTemplateUsed(response, 'experimentsearch/index.html')
         form = response.context['search_form']
-        self.assertEqual(form.cleaned_data['search_name'], 'bar.csv')
+        self.assertEqual(form.cleaned_data['search_name'], 'What is up')
         expected_table = ExperimentTable(expected_experi_set)
         actual_table = response.context['table']
         self.assertEqual(len(actual_table.rows), len(expected_table.rows))
