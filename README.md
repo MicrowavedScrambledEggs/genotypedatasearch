@@ -12,4 +12,10 @@ Allows for searching by experiment name, primary investigator and date created.
 Displays table of matching results, with links in each row to the relavant datasource 
 table and a download link for the data.
 
-Genotype data is currently queried externally, and not stored in this app's server
+Genotype data is currently queried externally (from http://10.1.8.167:8000/report/experiment/csv/), and not stored in this app's server
+
+Datasource table got from querying via url: "http://10.1.8.167:8000/report/data_source/csv/?experiment=" + experiment_name
+
+Download links are to: "http://10.1.8.167:8000/report/genotype/csv/?experiment=" + experiment_name
+
+(Test use csv files in test_resources instead of http://10.1.8.167:8000/report/)
