@@ -19,4 +19,3 @@ Datasource table got from querying via url: "http://10.1.8.167:8000/report/data_
 Download links are to: "http://10.1.8.167:8000/report/genotype/csv/?experiment=" + experiment_name
 
 (Test use csv files in test_resources instead of http://10.1.8.167:8000/report/)
-
