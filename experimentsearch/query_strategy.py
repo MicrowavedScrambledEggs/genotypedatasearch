@@ -1,4 +1,4 @@
-from .models import Experiment, DataSource
+from .models import Experiment, DataSourceForTable
 from datetime import datetime
 
 
@@ -79,7 +79,7 @@ class DataSourceQueryStrategy(AbstractQueryStrategy):
     def create_model(row):
         # Creates a models.DataSource from the values in the given row
         supplieddate = datetime.strptime(row['supplieddate'], "%Y-%m-%d").date()
-        return DataSource(
+        return DataSourceForTable(
             name=row['name'], is_active=row['is_active'], source=row['source'],
             supplier=row['supplier'], supply_date=supplieddate,
         )

@@ -7,7 +7,7 @@ class ExperimentSearchConfig(AppConfig):
     name = 'experimentsearch'
     verbose_name = 'Experiment Search'
 
-    has_run = False
+    has_run = True
 
     def ready(self):
         if not self.has_run:

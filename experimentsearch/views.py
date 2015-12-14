@@ -8,7 +8,7 @@ from .query_maker import QueryMaker
 from .query_strategy import ExperimentQueryStrategy, DataSourceQueryStrategy
 from .tables import ExperimentTable, DataSourceTable
 from . import forms as my_forms
-from .models import Experiment
+from .models import Experiment, make_table_experiment
 
 genotype_url = "http://10.1.8.167:8000/report/genotype/csv/"
 data_source_url = "http://10.1.8.167:8000/report/data_source/csv/"
@@ -111,7 +111,10 @@ class IndexHelper:
         if self.search_list is None or len(self.search_list) == 0:
             table = None
         else:
-            table = ExperimentTable(self.search_list)
+            table_list = []
+            for experiment in self.search_list:
+                table_list.append(make_table_experiment(experiment))
+            table = ExperimentTable(table_list)
             RequestConfig(self.request, paginate={"per_page": 25}).configure(table)
         return {
             'search_form': self.form, 'search_term': self.search_term,

@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 
+DBNAME = 'gds'
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -77,16 +79,15 @@ WSGI_APPLICATION = 'genotypedatasearch.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
+import mongoengine
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'gds',
-        'PORT': '5432',
-        'USER': 'postgres',
-        'PASSWORD': 'h0u53l0u53',
-        'HOST': '127.0.0.1'
-    }
+        'ENGINE': '',
+    },
 }
+
+SESSION_ENGINE = 'mongoengine.django.sessions'
 
 
 # Internationalization
