@@ -64,11 +64,17 @@ class ExperimentUpdate(AbstractQueryStrategy):
         when = ExperimentQueryStrategy.string_to_datetime(row['createddate'])
         ds = ExperimentQueryStrategy.data_source_url + name.replace(" ", "+")
         dl = ExperimentQueryStrategy.download_url + name.replace(" ", "+") + "/"
-        Experiment.objects.get_or_create(
-            name=name, date_created=when,
-            defaults={'primary_investigator': who, 'download_link': dl,
-                      'data_source': ds}
-        )
+        try:
+            Experiment.objects.get(
+                name=name, date_created=when, primary_investigator=who,
+                download_link=dl, data_source=ds
+            )
+        except Experiment.DoesNotExist :
+            experi = Experiment(
+                name=name, date_created=when, primary_investigator=who,
+                download_link=dl, data_source=ds
+            )
+            experi.save()
 
 
 class DataSourceQueryStrategy(AbstractQueryStrategy):

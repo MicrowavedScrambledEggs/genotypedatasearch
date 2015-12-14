@@ -95,7 +95,7 @@ SESSION_ENGINE = 'mongoengine.django.sessions'
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC+12'
+TIME_ZONE = 'Pacific/Auckland'
 
 USE_I18N = True
 

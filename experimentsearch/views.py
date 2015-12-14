@@ -67,7 +67,7 @@ class IndexHelper:
         self.form = my_forms.NameSearchForm(self.request.GET)
         #  Makes query
         self.search_term = self.request.GET['search_name'].strip()
-        self.search_list = Experiment.objects.filter(
+        self.search_list = Experiment.objects(
             name__contains=self.search_term
         )
 
@@ -76,7 +76,7 @@ class IndexHelper:
         self.form = my_forms.PISearchForm(self.request.GET)
         #  Makes Query
         self.search_term = self.request.GET['search_pi'].strip()
-        self.search_list = Experiment.objects.filter(
+        self.search_list = Experiment.objects(
             primary_investigator__contains=self.search_term
         )
         # Updates 'Search by' dropdown
@@ -91,7 +91,7 @@ class IndexHelper:
             # Queries for experiments with created dates in between the
             # 'from' and 'to' dates
             dates = self.form.cleaned_data
-            self.search_list = Experiment.objects.filter(
+            self.search_list = Experiment.objects(
                 date_created__gt=dates['from_date'],
                 date_created__lt=dates['to_date']
             )
