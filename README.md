@@ -2,9 +2,11 @@
 Web app for searching experimental genotype data (currently at database hosted at http://10.1.8.167:8000/report/), for use by Plant and Food Reasearch
 
 Built with Django 1.8
+
 Requires libraries:
 - pymongo 2.8
 - mongoengine 0.9
+
 These out-of-date versions are required as the Django extension was removed from mongoengine 1.x (as of writing there was no stable replacement), and pymongo 3.x is only apparently compatible with mongoengine 1.x
 
 To run server, from project directory enter command:
